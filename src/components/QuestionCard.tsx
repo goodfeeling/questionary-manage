@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { Button, Divider, Popconfirm, Space, Tag ,Modal} from "antd";
+import { Button, Divider, Popconfirm, Space, Tag, Modal } from "antd";
 import styles from "./QuestionCard.module.scss";
 import {
   CopyOutlined,
@@ -22,29 +22,27 @@ interface QuestionCardProps {
   createdAt: string;
 }
 
-const {confirm} = Modal
+const { confirm } = Modal;
 const QuestionCard: FunctionComponent<QuestionCardProps> = (
   props: QuestionCardProps
 ) => {
   const { _id, title, createdAt, answerCount, isPublished, isStar } = props;
   const nav = useNavigate();
 
-  function duplicate() {
-
-  }
+  function duplicate() {}
 
   function del() {
     console.log(222);
-   confirm({
-    title: '是否删除该问卷？',
-    icon: <ExclamationCircleFilled />,
-    onOk() {
-      console.log('确定');
-    },
-    onCancel() {
-      console.log('取消');
-    },
-  });
+    confirm({
+      title: "是否删除该问卷？",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        console.log("确定");
+      },
+      onCancel() {
+        console.log("取消");
+      },
+    });
   }
   return (
     <div>
@@ -75,7 +73,7 @@ const QuestionCard: FunctionComponent<QuestionCardProps> = (
             </Space>
           </div>
         </div>
-        <Divider style={{margin: "12px 0"}}/>
+        <Divider style={{ margin: "12px 0" }} />
         <div className={styles["button-container"]}>
           <div className={styles.left}>
             <Space>
@@ -103,13 +101,23 @@ const QuestionCard: FunctionComponent<QuestionCardProps> = (
               <Button type="text" icon={<StarOutlined />} size="small">
                 {isStar ? "取消标星" : "标星"}
               </Button>
-              <Popconfirm title="确定复制该问卷？" okText="确定" cancelText="取消" onConfirm={duplicate}>
-                  <Button type="text" icon={<CopyOutlined />} size="small">
-                复制
-              </Button>
+              <Popconfirm
+                title="确定复制该问卷？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={duplicate}
+              >
+                <Button type="text" icon={<CopyOutlined />} size="small">
+                  复制
+                </Button>
               </Popconfirm>
-            
-              <Button type="text" icon={<DeleteOutlined />} size="small" onClick={del}>
+
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                size="small"
+                onClick={del}
+              >
                 删除
               </Button>
             </Space>

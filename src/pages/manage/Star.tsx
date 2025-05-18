@@ -4,6 +4,7 @@ import QuestionCard from "../../components/QuestionCard";
 import { useSearchParams } from "react-router-dom";
 import { useTitle } from "ahooks";
 import { Empty, Typography } from "antd";
+import ListSearch from "../../components/ListSearch";
 
 type questionList = {
   _id: string;
@@ -13,39 +14,39 @@ type questionList = {
   answerCount: number;
   createdAt: string;
 };
-const rawQuestionList:questionList[] = [
-//   {
-//     _id: "q1",
-//     title: "问卷1",
-//     isPublished: true,
-//     isStar: true,
-//     answerCount: 3,
-//     createdAt: "3月11日 22:20",
-//   },
-//   {
-//     _id: "q2",
-//     title: "问卷2",
-//     isPublished: true,
-//     isStar: false,
-//     answerCount: 8,
-//     createdAt: "3月11日 22:20",
-//   },
-//   {
-//     _id: "q3",
-//     title: "问卷3",
-//     isPublished: false,
-//     isStar: true,
-//     answerCount: 6,
-//     createdAt: "3月11日 22:20",
-//   },
-//   {
-//     _id: "q4",
-//     title: "问卷4",
-//     isPublished: true,
-//     isStar: true,
-//     answerCount: 11,
-//     createdAt: "3月11日 22:20",
-//   },
+const rawQuestionList: questionList[] = [
+  //   {
+  //     _id: "q1",
+  //     title: "问卷1",
+  //     isPublished: true,
+  //     isStar: true,
+  //     answerCount: 3,
+  //     createdAt: "3月11日 22:20",
+  //   },
+  //   {
+  //     _id: "q2",
+  //     title: "问卷2",
+  //     isPublished: true,
+  //     isStar: false,
+  //     answerCount: 8,
+  //     createdAt: "3月11日 22:20",
+  //   },
+  //   {
+  //     _id: "q3",
+  //     title: "问卷3",
+  //     isPublished: false,
+  //     isStar: true,
+  //     answerCount: 6,
+  //     createdAt: "3月11日 22:20",
+  //   },
+  //   {
+  //     _id: "q4",
+  //     title: "问卷4",
+  //     isPublished: true,
+  //     isStar: true,
+  //     answerCount: 11,
+  //     createdAt: "3月11日 22:20",
+  //   },
 ];
 
 const { Title } = Typography;
@@ -59,7 +60,10 @@ const Star: FunctionComponent = () => {
         <div className={styles.left}>
           <Title level={3}>星标问卷</Title>
         </div>
-        <div className={styles.right}> (搜索) </div>
+        <div className={styles.right}>
+          {" "}
+          <ListSearch />
+        </div>
       </div>
       <div className={styles.content}>
         {questionList.length === 0 && <Empty description="暂无数据" />}
