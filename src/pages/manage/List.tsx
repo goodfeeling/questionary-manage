@@ -1,7 +1,7 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styles from "./common.module.scss";
 import QuestionCard from "../../components/QuestionCard";
-import {  useTitle } from "ahooks";
+import { useTitle } from "ahooks";
 import { Spin, Typography } from "antd";
 import ListSearch from "../../components/ListSearch";
 import useLoadQuestionListData from "../../hooks/useLoadQuestionListData";
@@ -18,8 +18,19 @@ const { Title } = Typography;
 
 const List: FC = () => {
   useTitle("问卷 - 我的问卷");
-  const { data = {}, loading } = useLoadQuestionListData()
-  const { list = [], total = 0 } = data;
+
+  const [page, setPage] = useState(1);
+  const [list, setList] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  const haveMoreData = total > list.length
+
+  function tryLoadMore() {
+    console.log("tryLoadMore");
+    
+  }
+  // const { data = {}, loading } = useLoadQuestionListData()
+  // const { list = [], total = 0 } = data;
   return (
     <>
       <div className={styles.header}>
