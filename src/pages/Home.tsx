@@ -1,11 +1,22 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import { Divider, Space, Typography } from "antd";
 import { MANAGE_PATHNAME } from "../router";
-import styles from "./Home.module.scss"
+import styles from "./Home.module.scss";
+import "../_mock/index";
+import axios from "axios";
+// import axios from "axios";
 const { Title, Paragraph } = Typography;
 const Home: FunctionComponent = () => {
+  useEffect(() => {
+    axios.get('/api/test').then(data=>console.log(data))
+
+    // fetch("/api/test")
+    //   .then((res) => res.json())
+    //   .then((data) => console.log(data));
+  }, []);
+
   //   const nav = useNavigate();
   // function clickHandler() {
   //   // nav('/login')

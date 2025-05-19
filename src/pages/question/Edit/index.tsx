@@ -1,9 +1,14 @@
-import { FunctionComponent } from "react";
-import { useParams } from "react-router-dom";
-
+import { FunctionComponent, useEffect, useState } from "react";
+import useLoadQuestionData from "../../../hooks/useLoadQuestionData";
 const Edit: FunctionComponent = () => {
-    const {id} = useParams()
-    return <><p>Edit {id}</p></>
-}
+  const { loading, data } = useLoadQuestionData();
+  return (
+    <div>
+      <p>Edit page</p>
+      {loading ? <p>loading</p> : <p>{JSON.stringify(data)}</p>}
+      <div></div>
+    </div>
+  );
+};
 
-export default Edit
+export default Edit;

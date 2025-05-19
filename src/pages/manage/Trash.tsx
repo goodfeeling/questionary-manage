@@ -1,9 +1,20 @@
 import { useTitle } from "ahooks";
 import { FunctionComponent, useState } from "react";
 import styles from "./common.module.scss";
-import { Empty, Typography, Table, Tag, Button, Space, Modal } from "antd";
+import {
+  Empty,
+  Typography,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Modal,
+  Spin,
+} from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import ListSearch from "../../components/ListSearch";
+import useLoadQuestionListData from "../../hooks/useLoadQuestionListData";
+import ListPage from "../../components/ListPage";
 const { Title } = Typography;
 const { confirm } = Modal;
 type questionItem = {
@@ -14,45 +25,11 @@ type questionItem = {
   answerCount: number;
   createdAt: string;
 };
-const rawQuestionList: questionItem[] = [
-  {
-    _id: "q1",
-    title: "问卷1",
-    isPublished: true,
-    isStar: true,
-    answerCount: 3,
-    createdAt: "3月11日 22:20",
-  },
-  {
-    _id: "q2",
-    title: "问卷2",
-    isPublished: true,
-    isStar: false,
-    answerCount: 8,
-    createdAt: "3月11日 22:20",
-  },
-  {
-    _id: "q3",
-    title: "问卷3",
-    isPublished: false,
-    isStar: true,
-    answerCount: 6,
-    createdAt: "3月11日 22:20",
-  },
-  {
-    _id: "q4",
-    title: "问卷4",
-    isPublished: true,
-    isStar: true,
-    answerCount: 11,
-    createdAt: "3月11日 22:20",
-  },
-];
 
 const Trash: FunctionComponent = () => {
   useTitle("逍遥问卷 - 回收站");
-  const [questionList, setQuestionList] =
-    useState<questionItem[]>(rawQuestionList);
+  const { data = {}, loading } = useLoadQuestionListData({ isDeleted: true });
+  const { list = [], total = 0 } = data;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const tableColumns = [
     {
@@ -106,7 +83,7 @@ const Trash: FunctionComponent = () => {
         </Space>
       </div>
       <Table
-        dataSource={rawQuestionList}
+        dataSource={list}
         columns={tableColumns}
         pagination={false}
         rowKey={(q) => q._id}
@@ -134,10 +111,17 @@ const Trash: FunctionComponent = () => {
         </div>
       </div>
       <div className={styles.content}>
-        {questionList.length === 0 && <Empty description="暂无数据" />}
-        {questionList.length > 0 && TableElement}
+        {loading && (
+          <div style={{ textAlign: "center" }}>
+            <Spin />
+          </div>
+        )}
+        {!loading && list.length === 0 && <Empty description="暂无数据" />}
+        {!loading && list.length > 0 && TableElement}
       </div>
-      <div className={styles.footer}>分页</div>
+      <div className={styles.footer}>
+        <ListPage total={total}/>
+      </div>
     </>
   );
 };

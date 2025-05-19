@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { Typography, Space, Form, Input, Button, Checkbox } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import styles from "./Register.module.scss";
@@ -6,9 +6,40 @@ import { Link } from "react-router-dom";
 import { REGISTER_PATHNAME } from "../router";
 
 const { Title } = Typography;
+const USERNAME_KEY = "USERNAME";
+const PASSWORD_KEY = "PASSWORD";
+
+function rememberUser(username: string, password: string) {
+  localStorage.setItem(USERNAME_KEY, username);
+  localStorage.setItem(PASSWORD_KEY, password);
+}
+
+function removeUserFromStorage() {
+  localStorage.removeItem(USERNAME_KEY);
+  localStorage.removeItem(PASSWORD_KEY);
+}
+
+function getUserFromStorage() {
+  return {
+    username: localStorage.getItem(USERNAME_KEY),
+    password: localStorage.getItem(PASSWORD_KEY),
+  };
+}
 const Login: FunctionComponent = () => {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    const { username, password } = getUserFromStorage();
+    form.setFieldsValue({ username, password });
+  }, []);
+
   const onFinish = (values: any) => {
-    console.log(values);
+    const { username, password, remember } = values;
+    if (remember) {
+      rememberUser(username, password);
+    } else {
+      removeUserFromStorage();
+    }
   };
   return (
     <div className={styles.container}>
@@ -26,15 +57,37 @@ const Login: FunctionComponent = () => {
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 16 }}
           onFinish={onFinish}
-          initialValues={{remember: true}}
+          initialValues={{ remember: true }}
+          form={form}
         >
-          <Form.Item label="用户名" name="username">
+          <Form.Item
+            label="用户名"
+            name="username"
+            rules={[
+              { required: true, message: "请输入用户名" },
+              {
+                type: "string",
+                min: 5,
+                max: 20,
+                message: "字符长度在 5-20 之间",
+              },
+              { pattern: /^\w+$/, message: "只能是字母数字下划线" },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="密码" name="password">
+          <Form.Item
+            label="密码"
+            name="password"
+            rules={[{ required: true, message: "请输入密码" }]}
+          >
             <Input.Password />
           </Form.Item>
-          <Form.Item  name="remember" valuePropName="checked" wrapperCol={{ offset: 6, span: 16 }}>
+          <Form.Item
+            name="remember"
+            valuePropName="checked"
+            wrapperCol={{ offset: 6, span: 16 }}
+          >
             <Checkbox>记住我</Checkbox>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
