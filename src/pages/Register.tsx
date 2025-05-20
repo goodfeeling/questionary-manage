@@ -1,16 +1,34 @@
 import { FunctionComponent } from "react";
-import { Typography, Space, Form, Input, Button } from "antd";
+import { Typography, Space, Form, Input, Button, message } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import styles from "./Register.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LOGIN_PATHNAME } from "../router";
+import { useRequest } from "ahooks";
+import { registerService } from "../services/user";
 
 const { Title } = Typography;
 
 const Register: FunctionComponent = () => {
+  const nav = useNavigate();
+  const { run } = useRequest(
+    async (values) => {
+      const { username, password, nickname } = values;
+      await registerService(username, password, nickname);
+    },
+    {
+      manual: true,
+      onSuccess() {
+        message.success("注册成功");
+        nav(LOGIN_PATHNAME);
+      },
+    }
+  );
+
   const onFinish = (values: any) => {
-    console.log(values);
+    run(values);
   };
+
   return (
     <div className={styles.container}>
       <div>
@@ -69,10 +87,7 @@ const Register: FunctionComponent = () => {
           >
             <Input.Password />
           </Form.Item>
-          <Form.Item
-            label="昵称"
-            name="nickname"
-          >
+          <Form.Item label="昵称" name="nickname">
             <Input />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>

@@ -1,4 +1,4 @@
-import { useTitle } from "ahooks";
+import { useRequest, useTitle } from "ahooks";
 import { FunctionComponent, useState } from "react";
 import styles from "./common.module.scss";
 import {
@@ -10,11 +10,16 @@ import {
   Space,
   Modal,
   Spin,
+  message,
 } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import ListSearch from "../../components/ListSearch";
 import useLoadQuestionListData from "../../hooks/useLoadQuestionListData";
 import ListPage from "../../components/ListPage";
+import {
+  deleteQuestionsService,
+  updateQuestionDataService,
+} from "../../services/question";
 const { Title } = Typography;
 const { confirm } = Modal;
 type questionItem = {
@@ -28,9 +33,45 @@ type questionItem = {
 
 const Trash: FunctionComponent = () => {
   useTitle("逍遥问卷 - 回收站");
-  const { data = {}, loading } = useLoadQuestionListData({ isDeleted: true });
+  const {
+    data = {},
+    loading,
+    refresh,
+  } = useLoadQuestionListData({ isDeleted: true });
   const { list = [], total = 0 } = data;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // 恢复
+  const { loading: reLoading, run: recover } = useRequest(
+    async () => {
+      for await (const id of selectedIds) {
+        await updateQuestionDataService(id, { isDeleted: false });
+      }
+    },
+    {
+      manual: true,
+      debounceWait: 500,
+      onSuccess() {
+        message.success("恢复成功");
+        refresh(); // 手动刷新列表
+        setSelectedIds([]);
+      },
+    }
+  );
+
+  // 批量删除
+  const { run: deleteQuestion } = useRequest(
+    async () => await deleteQuestionsService(selectedIds),
+    {
+      manual: true,
+      onSuccess() {
+        message.success("删除成功");
+        refresh();
+        setSelectedIds([]);
+      },
+    }
+  );
+
   const tableColumns = [
     {
       title: "标题",
@@ -60,10 +101,9 @@ const Trash: FunctionComponent = () => {
   function del() {
     confirm({
       title: "是否彻底删除该问卷？",
+      content: "删除不能找回，是否删除？",
       icon: <ExclamationCircleFilled />,
-      onOk() {
-        console.log("确定", JSON.stringify(selectedIds));
-      },
+      onOk: deleteQuestion,
       onCancel() {
         console.log("取消");
       },
@@ -74,7 +114,11 @@ const Trash: FunctionComponent = () => {
     <>
       <div style={{ marginBottom: "15px" }}>
         <Space>
-          <Button type="primary" disabled={selectedIds.length === 0}>
+          <Button
+            type="primary"
+            disabled={selectedIds.length === 0}
+            onClick={recover}
+          >
             恢复
           </Button>
           <Button danger disabled={selectedIds.length === 0} onClick={del}>
@@ -120,7 +164,7 @@ const Trash: FunctionComponent = () => {
         {!loading && list.length > 0 && TableElement}
       </div>
       <div className={styles.footer}>
-        <ListPage total={total}/>
+        <ListPage total={total} />
       </div>
     </>
   );

@@ -1,9 +1,20 @@
 import { FunctionComponent, useEffect } from "react";
-import { Typography, Space, Form, Input, Button, Checkbox } from "antd";
+import {
+  Typography,
+  Space,
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  message,
+} from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import styles from "./Register.module.scss";
-import { Link } from "react-router-dom";
-import { REGISTER_PATHNAME } from "../router";
+import { Link, useNavigate } from "react-router-dom";
+import { MANAGE_PATHNAME, REGISTER_PATHNAME } from "../router";
+import { useRequest } from "ahooks";
+import { loginService } from "../services/user";
+import { setToken } from "../utils/user-token";
 
 const { Title } = Typography;
 const USERNAME_KEY = "USERNAME";
@@ -27,20 +38,36 @@ function getUserFromStorage() {
 }
 const Login: FunctionComponent = () => {
   const [form] = Form.useForm();
+  const nav = useNavigate();
 
   useEffect(() => {
     const { username, password } = getUserFromStorage();
     form.setFieldsValue({ username, password });
   }, []);
 
+  const { run } = useRequest(
+    async (username: string, password: string) => await loginService(username, password),
+    {
+      manual: true,
+      onSuccess(result) {
+        const {token = ''} = result
+        setToken(token)
+        message.success("注册成功");
+        nav(MANAGE_PATHNAME);
+      },
+    }
+  );
+
   const onFinish = (values: any) => {
     const { username, password, remember } = values;
+    run(username, password);
     if (remember) {
       rememberUser(username, password);
     } else {
       removeUserFromStorage();
     }
   };
+
   return (
     <div className={styles.container}>
       <div>

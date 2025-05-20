@@ -30,3 +30,27 @@ export async function getQuestionListService(
   const data = (await axios.get(url, { params })) as AxiosResponse;
   return data.data.data;
 }
+
+// 更新单个问卷
+export async function updateQuestionDataService(
+  id: string,
+  opt: { [key: string]: any }
+) {
+  const url = `/api/question/${id}`;
+  const data = (await axios.patch(url, opt)) as AxiosResponse;
+  return data.data.data;
+}
+
+// 复制问卷
+export async function duplicateQuestionService(id:string) : Promise<ResDataType>{
+  const url = `/api/question/duplicate/${id}`
+  const data = (await axios.post(url)) as AxiosResponse
+  return data.data.data
+}
+
+// 批量删除
+export async function deleteQuestionsService(ids: string[]) :Promise<ResDataType>{
+  const url = `/api/question`
+  const data = (await axios.delete(url,{data: {ids}})) as AxiosResponse
+  return data.data.data
+}
